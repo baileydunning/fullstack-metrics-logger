@@ -2,8 +2,24 @@
   "name": "fullstack-metrics-logger",
   "version": "1.0.0",
   "description": "A package for collecting frontend and backend metrics for Express and React apps",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "keywords": [
+    "metrics",
+    "express",
+    "react",
+    "logging",
+    "performance"
+  ],
+  "homepage": "https://github.com/baileydunning/fullstack-metrics-logger#readme",
+  "bugs": {
+    "url": "https://github.com/baileydunning/fullstack-metrics-logger/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/baileydunning/fullstack-metrics-logger.git"
+  },
+  "license": "ISC",
+  "author": "Bailey Dunning",
+  "type": "module",
   "exports": {
     "./backend": {
       "import": "./dist/backend/core/backendMetrics.js",
@@ -14,28 +30,19 @@
       "require": "./dist/frontend/core/frontendMetrics.d.ts"
     }
   },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc --project tsconfig.backend.json && tsc --project tsconfig.frontend.json",
     "prepublishOnly": "npm run build"
   },
-  "keywords": [
-    "metrics",
-    "express",
-    "react",
-    "logging",
-    "performance"
-  ],
-  "author": "Bailey Dunning",
-  "license": "ISC",
-  "type": "module",
+  "dependencies": {
+    "express": "^5.1.0",
+    "winston": "^3.17.0",
+  },
   "devDependencies": {
     "@types/express": "^5.0.3",
     "@types/node": "^24.0.3",
     "typescript": "^5.8.3"
-  },
-  "dependencies": {
-    "express": "^5.1.0",
-    "winston": "^3.17.0",
-    "web-vitals": "^5.0.3"
   }
 }
