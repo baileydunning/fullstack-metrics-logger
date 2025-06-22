@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist/frontend",
+    "rootDir": "./src",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "declaration": true
+  },
+  "include": ["src/core/frontendMetrics.ts"],
+  "exclude": ["node_modules"]
+}
