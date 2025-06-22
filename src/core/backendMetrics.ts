@@ -201,6 +201,105 @@ export function captureBackendMetrics(
         uptimeSec: `${o.uptimeSec.toFixed(0)} s`,
       }));
       return clone;
+    },
+
+    summarizeMetrics: () => {
+      const {
+        httpRequests,
+        garbageCollections,
+        eventLoopDelays,
+        processStats,
+        osStats,
+        activeHandles,
+        errorCounts,
+      } = metrics;
+
+      const avg = (arr: number[]) =>
+        arr.length === 0 ? 0 : arr.reduce((a, b) => a + b, 0) / arr.length;
+
+      // HTTP
+      const totalReq = httpRequests.totalCount;
+      const errCount = httpRequests.errorCount;
+      const avgReqMs = avg(httpRequests.durationsMs);
+      const errRate = totalReq ? (errCount / totalReq) * 100 : 0;
+      const httpStatus =
+        errRate > 5 || avgReqMs > 500 ? 'Needs attention' : 'OK';
+
+      // GC
+      const gcDurations = garbageCollections.map(g => g.durationMs);
+      const avgGcMs = avg(gcDurations);
+      const maxGcMs = Math.max(...gcDurations, 0);
+      const gcStatus = avgGcMs > 50 ? 'GC is slow' : 'GC OK';
+
+      // Event loop
+      const lastLoop = eventLoopDelays[eventLoopDelays.length - 1] || {};
+      const { mean: loopMean = 0, max: loopMax = 0 } = lastLoop as any;
+      const loopStatus =
+        loopMean > 50 ? 'Event-loop lag' : 'Loop OK';
+
+      // Process / OS
+      const lastProc = processStats[processStats.length - 1] || { memory: {}, cpu: {} };
+      const lastOs = osStats[osStats.length - 1] || { loadAvg: [], totalMemBytes: 1 };
+      const memUsage = lastProc.memory.rss;
+      const cpuUser = lastProc.cpu.user + lastProc.cpu.system;
+      const memPct = (memUsage / lastOs.totalMemBytes) * 100;
+      const cpuPct = (cpuUser / 1e6 / os.cpus().length) * 100;
+      const resourceStatus =
+        memPct > 80 || cpuPct > 80 ? 'High resource use' : 'Resource use OK';
+
+      // OS load
+      const osStatus =
+        lastOs.loadAvg[0] > lastOs.cpuCores ? 'Load exceeds cores' : 'OS load OK';
+
+      // Handles
+      const lastHandles = activeHandles[activeHandles.length - 1]?.count || 0;
+      const handlesStatus =
+        lastHandles > 1000 ? 'Too many handles' : 'Handles OK';
+
+      // Runtime errors
+      const errorSum = errorCounts.uncaughtExceptions + errorCounts.unhandledRejections;
+      const errorStatus =
+        errorSum > 0 ? 'Runtime errors detected' : 'No runtime errors';
+
+      return {
+        http: {
+          total: totalReq,
+          errors: errCount,
+          errorRate: `${errRate.toFixed(1)}%`,
+          avgDuration: formatMs(avgReqMs),
+          status: httpStatus,
+        },
+        gc: {
+          avgPause: formatMs(avgGcMs),
+          maxPause: formatMs(maxGcMs),
+          status: gcStatus,
+        },
+        eventLoop: {
+          meanDelay: formatMs(loopMean),
+          maxDelay: formatMs(loopMax),
+          status: loopStatus,
+        },
+        process: {
+          memoryUsage: formatBytes(memUsage),
+          memoryPct: `${memPct.toFixed(1)}%`,
+          cpuPct: `${cpuPct.toFixed(1)}%`,
+          status: resourceStatus,
+        },
+        os: {
+          loadAvg: formatLoadAvg(lastOs.loadAvg),
+          freeMem: formatBytes(lastOs.freeMemBytes),
+          status: osStatus,
+        },
+        handles: {
+          current: lastHandles,
+          status: handlesStatus,
+        },
+        errors: {
+          uncaughtExceptions: errorCounts.uncaughtExceptions,
+          unhandledRejections: errorCounts.unhandledRejections,
+          status: errorStatus,
+        }
+      };
     }
   };
-}
+};
