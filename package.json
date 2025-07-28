@@ -1,6 +1,6 @@
 {
   "name": "fullstack-metrics-logger",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A package for collecting frontend and backend metrics for Express and React apps",
   "keywords": [
     "metrics",
