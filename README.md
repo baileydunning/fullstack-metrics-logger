@@ -14,6 +14,7 @@ This package is designed to enable developers to understand and monitor the real
   - Process and OS stats
   - Active handles
   - Error tracking
+  - User metrics (page views, custom events, active users)
 
 - **Frontend:**
   - Navigation timing
@@ -128,6 +129,14 @@ Example Response from `/metrics` endpoint:
     "errorCounts": {
       "uncaughtExceptions": 0,
       "unhandledRejections": 0
+    },
+    "userMetrics": {
+      "activeUsers": 50,
+      "pageViews": 120,
+      "customEvents": {
+        "buttonClick": 20,
+        "formSubmit": 5
+      }
     }
   },
   "summary": {
@@ -167,6 +176,15 @@ Example Response from `/metrics` endpoint:
       "uncaughtExceptions": 0,
       "unhandledRejections": 0,
       "status": "No runtime errors"
+    },
+    "userMetrics": {
+      "activeUsers": 50,
+      "pageViews": 120,
+      "customEvents": [
+        { "event": "buttonClick", "count": 20 },
+        { "event": "formSubmit", "count": 5 }
+      ],
+      "status": "User activity detected"
     }
   }
 }

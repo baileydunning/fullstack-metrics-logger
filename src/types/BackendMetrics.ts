@@ -1,41 +1,71 @@
 export interface BackendMetrics {
-  httpRequests: {
-    totalCount: number;           // Total number of HTTP requests handled
-    errorCount: number;           // Number of HTTP requests with error status codes (4xx/5xx)
-    durationsMs: number[];        // Array of request durations in milliseconds
-  };
-  garbageCollections: {           // Array of garbage collection events
-    type: number;                 // GC kind/type (e.g., 1=minor, 2=major, 4=incremental, 8=weak)
-    durationMs: number;           // Duration of the GC pause in milliseconds
-    timestamp: number;            // When the GC event occurred (ms since epoch)
-  }[];
-  eventLoopDelays: {              // Array of event loop delay stats
-    meanMs: number;               // Mean event loop delay in milliseconds
-    maxMs: number;                // Max event loop delay in milliseconds
-    minMs: number;                // Min event loop delay in milliseconds
-    p50Ms: number;                // 50th percentile (median) delay in ms
-    p99Ms: number;                // 99th percentile delay in ms
-    timestamp: number;            // When the sample was taken
-  }[];
-  processStats: {                 // Array of process resource usage snapshots
-    memory: NodeJS.MemoryUsage;   // Memory usage stats
-    cpu: NodeJS.CpuUsage;         // CPU usage stats
-    timestamp: number;            // When the sample was taken
-  }[];
-  osStats: {                      // Array of OS-level stats
-    loadAvg: number[];            // 1, 5, and 15 minute load averages
-    freeMemBytes: number;         // Free system memory in bytes
-    totalMemBytes: number;        // Total system memory in bytes
-    uptimeSec: number;            // System uptime in seconds
-    cpuCores: number;             // Number of CPU cores
-    timestamp: number;            // When the sample was taken
-  }[];
-  activeHandles: {                // Array of active handle counts
-    count: number;                // Number of active handles (files, sockets, etc.)
-    timestamp: number;            // When the sample was taken
-  }[];
-  errorCounts: {
-    uncaughtExceptions: number;   // Number of uncaught exceptions
-    unhandledRejections: number;  // Number of unhandled promise rejections
-  };
+  httpRequests: HttpRequestMetrics;
+  garbageCollections: GarbageCollectionMetrics[];
+  eventLoopDelays: EventLoopDelayMetrics[];
+  processStats: ProcessStats[];
+  osStats: OsStats[];
+  activeHandles: ActiveHandleMetrics[];
+  errorCounts: ErrorMetrics;
+  userMetrics: UserMetrics;
+}
+
+// Metrics for HTTP request performance
+export interface HttpRequestMetrics {
+  totalCount: number;
+  errorCount: number;
+  durationsMs: number[];
+}
+
+// Metrics for garbage collection events
+export interface GarbageCollectionMetrics {
+  type: number;
+  durationMs: number;
+  timestamp: number;
+}
+
+// Metrics for event loop delays
+export interface EventLoopDelayMetrics {
+  meanMs: number;
+  maxMs: number;
+  minMs: number;
+  p50Ms: number;
+  p99Ms: number;
+  timestamp: number;
+}
+
+// Process resource usage (memory, CPU)
+export interface ProcessStats {
+  memory: NodeJS.MemoryUsage;
+  cpu: NodeJS.CpuUsage;
+  timestamp: number;
+}
+
+// OS-level statistics (load averages, memory, uptime)
+export interface OsStats {
+  loadAvg: number[];
+  freeMemBytes: number;
+  totalMemBytes: number;
+  uptimeSec: number;
+  cpuCores: number;
+  timestamp: number;
+}
+
+// Active handles (e.g., files, sockets)
+export interface ActiveHandleMetrics {
+  count: number;
+  timestamp: number;
+}
+
+// Error counts (uncaught exceptions, unhandled promise rejections)
+export interface ErrorMetrics {
+  uncaughtExceptions: number;
+  unhandledRejections: number;
+}
+
+// User interaction and behavior metrics
+export interface UserMetrics {
+  activeUsers: number;
+  sessionDurationMs: number[];
+  pageViews: number;
+  customEvents: Record<string, number>;
 }
