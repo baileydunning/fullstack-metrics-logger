@@ -1,4 +1,4 @@
-[1.1.0] - 2025-07-28
+[1.1.0] - 2025-07-31
 Introduced a new userMetrics field in the BackendMetrics interface to track user interaction data:
 + activeUsers: Estimated number of active users
 + sessionDurationMs: Array of session durations (for future use)
